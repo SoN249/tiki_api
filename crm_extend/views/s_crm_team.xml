@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="s_crm_team_form_view" model="ir.ui.view">
+        <field name="name">s.crm.team.form.view</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='members_users']" position="before">
+                <page string="Chỉ tiêu doanh số theo tháng (trước VAT)" groups="crm_extend.group_staff_leader">
+                    <group>
+                        <field name="currency_id"/>
+                       <field name="January" widget="monetary"/>
+                        <field name="February" widget="monetary"/>
+                        <field name="March" widget="monetary"/>
+                        <field name="April" widget="monetary"/>
+                        <field name="May" widget="monetary"/>
+                        <field name="June" widget="monetary"/>
+                        <field name="July" widget="monetary"/>
+                        <field name="August" widget="monetary"/>
+                        <field name="September" widget="monetary"/>
+                        <field name="October" widget="monetary"/>
+                        <field name="November" widget="monetary"/>
+                        <field name="December" widget="monetary"/>
+
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <!--        tree view-->
+        <record model="ir.ui.view" id="sales_purchase_view_tree">
+            <field name="name">sales.purchase.view.tree</field>
+            <field name="model">sales.purchase</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--        form view-->
+        <record model="ir.ui.view" id="sales_purchase_view_form">
+            <field name="name">sales.purchase.view.form</field>
+            <field name="model">sales.purchase</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="btn_send_email" string="Send by email" type="object"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="create_date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--        actions-->
+        <record model="ir.actions.act_window" id="sales_purchase_action">
+            <field name="name">Sales Purchase</field>
+            <field name="res_model">sales.purchase</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!--        menu-->
+        <menuitem id="sales_purchase_menu" name="API Report" action="sales_purchase_action"/>
+    </data>
+</odoo>

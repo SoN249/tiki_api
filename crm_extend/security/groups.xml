@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.module.category" id="category_manager_crm">
+            <field name="name">Manager CRM Sales</field>
+        </record>
+
+        <record model="res.groups" id="group_staff_employee">
+            <field name="name">Employee</field>
+            <field name="category_id" ref="category_manager_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+         <record id="group_staff_approver" model="res.groups">
+            <field name="name">Approver</field>
+            <field name="category_id" ref="category_manager_crm"/>
+            <field name="implied_ids" eval="[(4, ref('group_staff_employee'))]"/>
+        </record>
+
+        <record model="res.groups" id="group_staff_manager">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="category_manager_crm"/>
+            <field name="implied_ids" eval="[(4, ref('group_staff_approver'))]"/>
+        </record>
+
+        <record model="res.groups" id="group_staff_leader">
+            <field name="name">Leader</field>
+            <field name="category_id" ref="category_manager_crm"/>
+            <field name="implied_ids" eval="[(4, ref('group_staff_manager'))]"/>
+        </record>
+
+
+    </data>
+</odoo>

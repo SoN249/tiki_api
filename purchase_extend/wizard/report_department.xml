@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="report_department_form_view">
+            <field name="name">report.department.form</field>
+            <field name="model">report.department</field>
+            <field name="arch" type="xml">
+                <form string="Indicator Evaluation Report">
+                    <group>
+                        <group>
+                            <field name="month"/>
+                        </group>
+                        <group>
+                            <field name="department_id" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Confirm" name="btn_confirm" type="object" default_focus="1"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="report_department_action" model="ir.actions.act_window">
+            <field name="name">Indicator Evaluation Report</field>
+            <field name="res_model">report.department</field>
+            <field name="binding_model_id" ref="model_hr_department"/>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="report_department_form_view"/>
+        </record>
+
+        <menuitem name="Report Department" id="department_menu" parent="hr.menu_hr_root"
+                  action="report_department_action"
+                  sequence="20" groups="purchase_extend.group_staff_purchase"/>
+    </data>
+</odoo>

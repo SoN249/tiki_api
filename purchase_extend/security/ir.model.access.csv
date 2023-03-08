@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_order_limit,access_order_limit,model_order_limit,group_staff_purchase,1,1,1,1
+access_employee_order_limit,access_employee_model_limit,model_employee_order_limit,group_staff_purchase,1,1,1,1
+access_report_department_wizard,access_report_department_wizard,model_report_department,group_staff_purchase,1,1,1,1

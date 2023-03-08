@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tiki_product_form_view" model="ir.ui.view">
+            <field name="name">tiki.product.form</field>
+            <field name="model">product.tiki</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="category_id"/>
+                                <field name="brand_id"/>
+                                <field name="brand_country"/>
+                                <field name="origin"/>
+                            </group>
+                            <group>
+                                <field name="product_height"/>
+                                <field name="product_width"/>
+                                <field name="product_length"/>
+                                <field name="is_warranty_applied"/>
+                            </group>
+                        </group>
+                           <group>
+                                <field name="option_attributes"/>
+                                <field name="image"/>
+                                <field name="sku"/>
+                                <field name="price"/>
+                               <field name="option1"/>
+                               <field name="inventory_type"/>
+                               <field name="is_auto_turn_on"/>
+                            </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="product_tiki_tree_view" model="ir.ui.view">
+            <field name="name">product.tiki.tree</field>
+            <field name="model">product.tiki</field>
+            <field name="arch" type="xml">
+                <tree string="ModelTitle">
+                    <field name="name"/>
+                    <field name="category_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_tiki_act_window" model="ir.actions.act_window">
+            <field name="name">Product</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.tiki</field>
+            <field name="view_mode">tree,kanban,form</field>
+        </record>
+        <menuitem id="menu_product_tiki" name="Tiki Shop"/>
+        <menuitem name="Product" id="product_tiki_act" parent="menu_product_tiki" action="product_tiki_act_window"/>
+
+    </data>
+</odoo>
