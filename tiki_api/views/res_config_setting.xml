@@ -14,12 +14,20 @@
                                 <div class="row mt8">
                                     <label class="col-lg-3" string="Client ID" for="client_id"/>
                                     <field name="client_id" title="Provide the Client ID here"/>
+
                                 </div>
                                 <div class="row mt8">
                                     <label class="col-lg-3" string="Client Secret" for="client_secret"/>
                                     <field name="client_secret" title="Provide the Client Secret here"/>
                                 </div>
-                                <button class="btn btn-primary" name="btn_get_token" type="object" string="Connect to Tiki"/>
+                                <div class="row mt8">
+                                    <label class="col-lg-3" string="Tiki Api" for="tiki_api"/>
+                                    <field name="tiki_api" title="Provide the Tiki-api here"/>
+                                </div>
+                                <button class="btn btn-primary" name="btn_get_token" type="object"
+                                        string="Connect to Tiki"/>
+                                <button class="btn btn-primary mx-2" name="btn_sync_data_tiki" type="object" string="Sync Data"/>
+
                             </div>
                         </div>
                     </div>

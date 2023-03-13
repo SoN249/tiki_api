@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        tree view-->
+<!--        <record model="ir.ui.view" id="product_product_view_tree">-->
+<!--            <field name="name">product.product.view.tree</field>-->
+<!--            <field name="model">product.product</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--              -->
+<!--            </field>-->
+<!--        </record>-->
+
+        <!--        form view-->
+        <record model="ir.ui.view" id="product_attribute_view_form">
+            <field name="name">product.attribute.view.form</field>
+            <field name="model">product.attribute</field>
+            <field name="inherit_id" ref="product.product_attribute_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook//page[@name='attribute_values']//field[@name='name']" position="after">
+                    <field name ='price'/>
+                    <field name ='sku'/>
+                    <field name ='image'/>
+                </xpath>
+                <xpath expr="//notebook//page[@name='attribute_values']//field[@name='is_custom']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        actions-->
+        <record model="ir.actions.act_window" id="product_attribute_action">
+            <field name="name">Thuộc tính</field>
+            <field name="res_model">product.attribute</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!--        menu-->
+
+        <menuitem name="Thuộc tính" id="product_attribute_act" parent="product_tiki_act" action="product_attribute_action"/>
+
+    </data>
+</odoo>

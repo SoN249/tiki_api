@@ -1,60 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="tiki_product_form_view" model="ir.ui.view">
-            <field name="name">tiki.product.form</field>
-            <field name="model">product.tiki</field>
+        <!--        tree view-->
+<!--        <record model="ir.ui.view" id="product_product_view_tree">-->
+<!--            <field name="name">product.product.view.tree</field>-->
+<!--            <field name="model">product.product</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--              -->
+<!--            </field>-->
+<!--        </record>-->
+
+        <!--        form view-->
+        <record model="ir.ui.view" id="product_product_view_form">
+            <field name="name">product.product.view.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <group>
+                <xpath expr="//button[@name='action_open_label_layout']" position="after">
+                    <button type="object" name="btn_create_product" string="Tạo sản phẩm"/>
+                </xpath>
+                 <xpath expr="//notebook//page[@name='sales']" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                 </xpath>
+                 <xpath expr="//notebook//page[@name='purchase']" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                 </xpath>
+                 <xpath expr="//notebook//page[@name='inventory']" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                 </xpath>
+                <xpath expr="//group[@name='group_standard_price']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//group[@name='group_general']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//group[@name='group_standard_price']" position="before">
+                     <group name="group_information">
+                         <field name="categ_id"/>
+                         <field name="brand"/>
+                         <field name="origin"/>
+                         <field name="brand_country"/>
+                         <field name="inventory_type"/>
+                         <field name="warehouse_ids" widget="one2many" attrs="{'invisible': [('inventory_type', '!=','dropship')]}">
+                             <tree string="warehouses" editable="bottom">
+                                 <field name="attribute_id"/>
+                                 <field name="qtyAvailable"/>
+                             </tree>
+                         </field>
+
+                     </group>
+                     <group>
+                         <field name="image"/>
+                         <field name="price"/>
+                         <field name="sku"/>
+                         <field name="product_weight_kg"/>
+                         <field name="product_length"/>
+                         <field name="product_width"/>
+                         <field name="product_height"/>
+                         <field name="is_warranty_applied"/>
+                     </group>
+                 </xpath>
+                <xpath expr="//div[@name='options']//span[@class='d-inline-block']" position="after">
+                    <span class="d-inline-block">
+                            <field name="is_option"/>
+                            <label for="is_option"/>
+                        </span>
+                </xpath>
+
+                <xpath expr="//notebook//page[@name='general_information']" position="after">
+                    <page name="description" string="Mô tả sản phẩm">
+                        <field name="description" widget="html"/>
+                    </page>
+                    <page name="variants" string="Thuộc tính sản phẩm" attrs="{'invisible':[('is_option','=',False)]}">
+                        <field name="attribute_id">
+                            <tree>
                                 <field name="name"/>
-                                <field name="category_id"/>
-                                <field name="brand_id"/>
-                                <field name="brand_country"/>
-                                <field name="origin"/>
-                            </group>
-                            <group>
-                                <field name="product_height"/>
-                                <field name="product_width"/>
-                                <field name="product_length"/>
-                                <field name="is_warranty_applied"/>
-                            </group>
+                                <field name="value_ids"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="certificate_files" string="Tài liệu yêu cầu">
+                        <group>
+                            <field name="ulr_image"/>
+                            <field name="type_certificate"/>
                         </group>
-                           <group>
-                                <field name="option_attributes"/>
-                                <field name="image"/>
-                                <field name="sku"/>
-                                <field name="price"/>
-                               <field name="option1"/>
-                               <field name="inventory_type"/>
-                               <field name="is_auto_turn_on"/>
-                            </group>
-                    </sheet>
-                </form>
+                    </page>
+                </xpath>
             </field>
         </record>
 
-        <record id="product_tiki_tree_view" model="ir.ui.view">
-            <field name="name">product.tiki.tree</field>
-            <field name="model">product.tiki</field>
-            <field name="arch" type="xml">
-                <tree string="ModelTitle">
-                    <field name="name"/>
-                    <field name="category_id"/>
-                </tree>
-            </field>
+        <!--        actions-->
+        <record model="ir.actions.act_window" id="product_tiki_action">
+            <field name="name">Sản phẩm</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
-        <record id="product_tiki_act_window" model="ir.actions.act_window">
-            <field name="name">Product</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">product.tiki</field>
-            <field name="view_mode">tree,kanban,form</field>
-        </record>
-        <menuitem id="menu_product_tiki" name="Tiki Shop"/>
-        <menuitem name="Product" id="product_tiki_act" parent="menu_product_tiki" action="product_tiki_act_window"/>
-
+        <!--        menu-->
+        <menuitem id="menu_product_tiki" name="Tiki Shop" />
+        <menuitem name="Sản phẩm" id="product_tiki_act" parent="menu_product_tiki"/>
+         <menuitem name="Sản phẩm" id="product_tiki" parent="product_tiki_act" action="product_tiki_action"/>
     </data>
 </odoo>

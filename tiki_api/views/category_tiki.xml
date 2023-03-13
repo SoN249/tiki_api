@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+            <record model="ir.ui.view" id="category_tiki_view_tree">
+            <field name="name">category.tiki.view.tree</field>
+            <field name="model">category.tiki</field>
+            <field name="arch" type="xml">
+                <field name="name"/>
+                <feld name="description"/>
+            </field>
+        </record>
+</odoo>

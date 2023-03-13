@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_product_tiki,access_product_tiki,model_product_tiki,base.group_user,1,1,1,1
-access_category_tiki,access_category_tiki,model_category_tiki,base.group_user,1,1,1,1
+access_product_origin,access_product_origin,model_product_origin,base.group_user,1,1,1,1
+access_categories_tiki,access_categories_tiki,model_categories_tiki,base.group_user,1,1,1,1
 access_brand_tiki,access_brand_tiki,model_brand_tiki,base.group_user,1,1,1,1
+access_warehouses_tiki,access_warehouses_tiki,model_warehouses_tiki,,1,1,1,1
+access_warehouses_tiki_line,access_warehouses_tiki_line,model_warehouses_tiki_line,,1,1,1,1
