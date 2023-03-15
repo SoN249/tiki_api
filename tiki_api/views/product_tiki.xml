@@ -16,8 +16,12 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
+                <header>
+                    <field name ="state" widget="statusbar"/>
+                </header>
                 <xpath expr="//button[@name='action_open_label_layout']" position="after">
-                    <button type="object" name="btn_create_product" string="Tạo sản phẩm"/>
+                    <button type="object" name="btn_create_product" string="Tạo sản phẩm" attrs="{'invisible': [('track_id', '!=',False)]}"/>
+                    <button type="object" name="btn_replay_product" string="Replay" attrs="{'invisible': [('track_id','=',False)]}"/>
                 </xpath>
                  <xpath expr="//notebook//page[@name='sales']" position="attributes">
                      <attribute name="invisible">1</attribute>
@@ -36,6 +40,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                  <xpath expr="//group[@name='group_standard_price']" position="before">
+                     <field name="track_id" invisible="1"/>
                      <group name="group_information">
                          <field name="categ_id"/>
                          <field name="brand"/>
@@ -44,7 +49,7 @@
                          <field name="inventory_type"/>
                          <field name="warehouse_ids" widget="one2many" attrs="{'invisible': [('inventory_type', '!=','dropship')]}">
                              <tree string="warehouses" editable="bottom">
-                                 <field name="attribute_id"/>
+                                 <field name="warehouse_ids"/>
                                  <field name="qtyAvailable"/>
                              </tree>
                          </field>
@@ -52,8 +57,8 @@
                      </group>
                      <group>
                          <field name="image"/>
-                         <field name="price"/>
-                         <field name="sku"/>
+                         <field name="price" attrs="{'invisible':[('is_option', '=',True)]}"/>
+                         <field name="sku" attrs="{'invisible':[('is_option', '=',True)]}"/>
                          <field name="product_weight_kg"/>
                          <field name="product_length"/>
                          <field name="product_width"/>
