@@ -5,11 +5,11 @@ from odoo.exceptions import ValidationError, UserError
 
 
 class ProductsTiki(models.Model):
-    _inherit = ['product.product']
+    _inherit = ['product.template']
 
-    attribute_id = fields.One2many('product.attribute', 'product_id', limit=2)
     brand = fields.Many2one('brand.tiki', string="Thương hiệu")
-    categ_id = fields.Many2one('categories.tiki', string="Danh mục sản phẩm", domain="[('no_license_seller_enabled','=', True)]")
+    categories_ids = fields.Many2one('categories.tiki', string="Danh mục sản phẩm",
+                                    domain="[('no_license_seller_enabled','=', True)]")
     origin = fields.Many2one('product.origin', string="Xuất xứ (Quốc gia)")
     brand_country = fields.Many2one('product.origin', string="Xuất xứ thương hiệu (Quốc gia)")
     description = fields.Html('Mô tả sản phẩm')
@@ -33,20 +33,20 @@ class ProductsTiki(models.Model):
     sku = fields.Char(string='Mã sản phẩm')
     is_option = fields.Boolean('Có thêm lựa chọn sản phẩm?', default=False)
     track_id = fields.Char(string='Track ID')
-    state = fields.Selection([('none','New'),
-                              ('processing',"Processing"),
-                              ('drafted','Drafted'),
+    state = fields.Selection([('none', 'New'),
+                              ('processing', "Processing"),
+                              ('drafted', 'Drafted'),
                               ('bot_awaiting_approve', "Bot Awaiting Approve"),
-                              ('md_awaiting_approve','MD Awaiting Approve'),
-                              ('awaiting_approve','Awaiting Approve'),
+                              ('md_awaiting_approve', 'MD Awaiting Approve'),
+                              ('awaiting_approve', 'Awaiting Approve'),
                               ('approved', 'Approved'),
                               ('rejected', 'Rejected'),
                               ('deleted', 'Deleted')
-                              ],compute="_compute_state" ,default= 'none')
+                              ], compute="_compute_state", default='none')
 
-    @api.onchange("attribute_id")
+    @api.onchange('attribute_line_ids')
     def _check_attribute_id(self):
-        if len(self.attribute_id) > 2:
+        if len(self.attribute_line_ids.attribute_id) > 2:
             raise ValidationError("Not more than 2 attribute")
 
     @api.onchange('product_weight_kg', 'product_length', 'product_width', 'product_height', 'product_height')
@@ -55,6 +55,7 @@ class ProductsTiki(models.Model):
             raise ValidationError("Giá trị phải lớn hơn 0")
 
     def btn_create_product(self):
+
 
         conn = http.client.HTTPSConnection("api.tiki.vn")
         data_conn = self.env['base.integrate.tiki'].sudo().search([])
@@ -65,7 +66,7 @@ class ProductsTiki(models.Model):
         }
 
         data = {
-            "category_id": self.categ_id.categories_id,
+            "category_id": self.categories_ids.categories_id,
             "name": self.name,
             "description": self.description,
             "attributes": {
@@ -79,7 +80,7 @@ class ProductsTiki(models.Model):
                 "product_weight_kg": self.product_weight_kg,
                 "is_warranty_applied": self.is_warranty_applied
             },
-            "image": self.image,
+            "image": 'https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsL.jpg',
             "option_attributes": [],
             "variants": [
 
@@ -96,10 +97,10 @@ class ProductsTiki(models.Model):
         }
         # Check product attributes
         if self.is_option == False:
-            data["option_attributes"] =[]
+            data["option_attributes"] = []
         else:
-           for attribute in self.attribute_id.mapped("name"):
-               data["option_attributes"].append(attribute)
+            for attribute in self.attribute_line_ids.attribute_id.mapped("name"):
+                data["option_attributes"].append(attribute)
 
         # add warehouses stock
         warehouse_stocks = []
@@ -122,64 +123,31 @@ class ProductsTiki(models.Model):
                 "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg"
             })
         else:
-            price = self.attribute_id.value_ids.mapped('price')
-            sku = self.attribute_id.value_ids.mapped('sku')
-            image = self.attribute_id.value_ids.mapped('image')
-            name = self.attribute_id.value_ids.mapped('name')
-            if len(data['option_attributes']) == 1:
-                for price, sku, image, name in zip(price, sku, image, name):
+            for r in range(len(self.product_variant_ids)):
+                for value in self.prduct_variant_ids[r]:
                     data['variants'].append({
-                        "sku": sku,
-                        "option1": name,
-                        "price": price,
+                        "sku": value.default_code,
+                        "option1": value,
+                        "price": value,
                         "inventory_type": self.inventory_type,
                         "warehouse_stocks": warehouse_stocks,
                         "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
                     })
 
-            if len(data['option_attributes']) == 2:
-                value1 = []
-                value2 = []
-                for r in range(len(self.attribute_id[0].value_ids)):
-                    option1 = self.attribute_id[0].value_ids[r]
-                    value1.append({
-                        "sku": option1.sku,
-                        'name': option1.name,
-                        "price": option1.price,
-                        "image": option1.image
-                    })
-                for r in range(len(self.attribute_id[1].value_ids)):
-                    option2 = self.attribute_id[1].value_ids[r]
-                    value2.append({
-                        "sku": option2.sku,
-                        'name': option2.name,
-                        "price": option2.price,
-                        "image": option2.image
-                    })
-                for option1,option2 in zip(value1,value2):
-                    data['variants'].append({
-                        "sku": option1["sku"],
-                        "option1": option1["name"],
-                        "option2": option2["name"],
-                        "price": option1["price"],
-                        "inventory_type": self.inventory_type,
-                        "warehouse_stocks": warehouse_stocks,
-                        "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
-                    })
+
 
         # request api
-        print(json.dumps(data))
-        payload = json.dumps(data)
-
-        conn.request("POST", "/integration/v2.1/requests", payload, headers)
-
-        res = conn.getresponse()
-        response = res.read().decode("utf-8").replace("'", '"')
-        res_json = json.loads(response)
-        if res_json["track_id"]:
-            self.track_id = res_json["track_id"]
-        else:
-            print(res_json['errors'])
+        # payload = json.dumps(data)
+        #
+        # conn.request("POST", "/integration/v2.1/requests", payload, headers)
+        #
+        # res = conn.getresponse()
+        # response = res.read().decode("utf-8").replace("'", '"')
+        # res_json = json.loads(response)
+        # if res_json["track_id"]:
+        #     self.track_id = res_json["track_id"]
+        # else:
+        #     print(res_json['errors'])
 
     def btn_replay_product(self):
         conn = http.client.HTTPSConnection("api.tiki.vn")
@@ -188,30 +156,13 @@ class ProductsTiki(models.Model):
         headers = {
             'tiki-api': data_conn.tiki_api
         }
-        conn.request("POST", "/integration/v2/tracking/"+self.track_id+"replay", payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-
-
-        print(data.decode("utf-8"))
+        conn.request("POST", "/integration/v2/tracking/" + self.track_id + "replay", payload, headers)
+        # res = conn.getresponse()
+        # data = res.read()
 
     def _compute_state(self):
         if not self.state:
             self.state = 'none'
         if self.track_id:
-            conn = http.client.HTTPSConnection("api.tiki.vn")
-            payload = ''
-            data_conn = self.env['base.integrate.tiki'].sudo().search([])
-            headers = {
-                'tiki-api': data_conn.tiki_api
-            }
-            conn.request("GET", "/integration/v2/tracking/"+self.track_id, payload, headers)
-            res = conn.getresponse()
-            response = res.read().decode("utf-8").replace("'", '"')
-            res_json = json.loads(response)
-            self.state = res_json['state']
-
-
-
-
-
+          data =  self.env['tracking.tiki']._get_tracking_tiki(self.track_id)
+          self.state = data['state']

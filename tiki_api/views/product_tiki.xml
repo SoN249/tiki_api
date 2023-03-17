@@ -11,14 +11,11 @@
 <!--        </record>-->
 
         <!--        form view-->
-        <record model="ir.ui.view" id="product_product_view_form">
-            <field name="name">product.product.view.form</field>
-            <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <record model="ir.ui.view" id="product_template_view_form">
+            <field name="name">product.template.view.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
-                <header>
-                    <field name ="state" widget="statusbar"/>
-                </header>
                 <xpath expr="//button[@name='action_open_label_layout']" position="after">
                     <button type="object" name="btn_create_product" string="Tạo sản phẩm" attrs="{'invisible': [('track_id', '!=',False)]}"/>
                     <button type="object" name="btn_replay_product" string="Replay" attrs="{'invisible': [('track_id','=',False)]}"/>
@@ -39,10 +36,13 @@
                 <xpath expr="//group[@name='group_general']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//page[@name='variants']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_option', '=', False)]}</attribute>
+                </xpath>
                  <xpath expr="//group[@name='group_standard_price']" position="before">
                      <field name="track_id" invisible="1"/>
                      <group name="group_information">
-                         <field name="categ_id"/>
+                         <field name="categories_ids"/>
                          <field name="brand"/>
                          <field name="origin"/>
                          <field name="brand_country"/>
@@ -77,18 +77,18 @@
                     <page name="description" string="Mô tả sản phẩm">
                         <field name="description" widget="html"/>
                     </page>
-                    <page name="variants" string="Thuộc tính sản phẩm" attrs="{'invisible':[('is_option','=',False)]}">
-                        <field name="attribute_id">
-                            <tree>
-                                <field name="name"/>
-                                <field name="value_ids"/>
-                            </tree>
-                        </field>
-                    </page>
+
                     <page name="certificate_files" string="Tài liệu yêu cầu">
                         <group>
                             <field name="ulr_image"/>
                             <field name="type_certificate"/>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//notebook//page[@name='variants']" position="after">
+                    <page name="state" string="Trạng thái">
+                        <group>
+                            <field name="state" readonly="1" string="Trạng thái sản phẩm Tiki"/>
                         </group>
                     </page>
                 </xpath>
@@ -98,7 +98,7 @@
         <!--        actions-->
         <record model="ir.actions.act_window" id="product_tiki_action">
             <field name="name">Sản phẩm</field>
-            <field name="res_model">product.product</field>
+            <field name="res_model">product.template</field>
             <field name="view_mode">tree,form</field>
         </record>
 
