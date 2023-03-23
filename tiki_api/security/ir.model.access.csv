@@ -4,4 +4,4 @@ access_categories_tiki,access_categories_tiki,model_categories_tiki,base.group_u
 access_brand_tiki,access_brand_tiki,model_brand_tiki,base.group_user,1,1,1,1
 access_warehouses_tiki,access_warehouses_tiki,model_warehouses_tiki,base.group_user,1,1,1,1
 access_warehouses_tiki_line,access_warehouses_tiki_line,model_warehouses_tiki_line,base.group_user,1,1,1,1
-
+access_warehouses_seller,access_warehouses_seller,model_warehouses_seller,base.group_user,1,1,1,1

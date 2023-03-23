@@ -20,14 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','sale','product', 'mail'],
+    'depends': ['base','sale','product'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/res_config_setting.xml',
         'views/product_tiki.xml',
-        'views/s_product_attribute.xml',
+        'views/s_order_tiki.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

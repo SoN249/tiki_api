@@ -20,24 +20,22 @@
                     <button type="object" name="btn_create_product" string="Tạo sản phẩm" attrs="{'invisible': [('track_id', '!=',False)]}"/>
                     <button type="object" name="btn_replay_product" string="Replay" attrs="{'invisible': [('track_id','=',False)]}"/>
                 </xpath>
-                 <xpath expr="//notebook//page[@name='sales']" position="attributes">
-                     <attribute name="invisible">1</attribute>
-                 </xpath>
-                 <xpath expr="//notebook//page[@name='purchase']" position="attributes">
-                     <attribute name="invisible">1</attribute>
-                 </xpath>
-                 <xpath expr="//notebook//page[@name='inventory']" position="attributes">
-                     <attribute name="invisible">1</attribute>
-                 </xpath>
-                <xpath expr="//group[@name='group_standard_price']" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
-
                 <xpath expr="//group[@name='group_general']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='categ_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
                 <xpath expr="//page[@name='variants']" position="attributes">
                     <attribute name="attrs">{'invisible': [('is_option', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_tag_ids']" position="after">
+                         <field name="product_weight_kg"/>
+                         <field name="product_length"/>
+                         <field name="product_width"/>
+                         <field name="product_height"/>
+                         <field name="is_warranty_applied"/>
                 </xpath>
                  <xpath expr="//group[@name='group_standard_price']" position="before">
                      <field name="track_id" invisible="1"/>
@@ -49,21 +47,11 @@
                          <field name="inventory_type"/>
                          <field name="warehouse_ids" widget="one2many" attrs="{'invisible': [('inventory_type', '!=','dropship')]}">
                              <tree string="warehouses" editable="bottom">
-                                 <field name="warehouse_ids"/>
+                                 <field name="warehouse_id"/>
                                  <field name="qtyAvailable"/>
                              </tree>
                          </field>
 
-                     </group>
-                     <group>
-                         <field name="image"/>
-                         <field name="price" attrs="{'invisible':[('is_option', '=',True)]}"/>
-                         <field name="sku" attrs="{'invisible':[('is_option', '=',True)]}"/>
-                         <field name="product_weight_kg"/>
-                         <field name="product_length"/>
-                         <field name="product_width"/>
-                         <field name="product_height"/>
-                         <field name="is_warranty_applied"/>
                      </group>
                  </xpath>
                 <xpath expr="//div[@name='options']//span[@class='d-inline-block']" position="after">

@@ -93,6 +93,7 @@ class ResConfigSetting(models.TransientModel):
     def btn_sync_data_tiki(self):
         self.env['categories.tiki'].get_categories_tiktok()
         self.env['warehouses.tiki'].get_warehouses_tiki()
+        self.env['warehouses.seller'].get_warehouses_seller()
 
 
 class BaseItegrateTiki(models.Model):

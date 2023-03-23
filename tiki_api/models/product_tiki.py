@@ -25,12 +25,9 @@ class ProductsTiki(models.Model):
                                        ], string='Mô hình vận hành')
     warehouse_ids = fields.One2many('warehouses.tiki.line', 'product_id_warehouses', string='Kho Tiki')
 
-    image = fields.Text(string="Ảnh sản phẩm")
     is_auto_turn_on = fields.Boolean('Auto turn', default=False)
     ulr_image = fields.Text('Đường dẫn ảnh tài liệu')
     type_certificate = fields.Selection([('brand', 'Brand')], string="Type")
-    price = fields.Float('Giá bán')
-    sku = fields.Char(string='Mã sản phẩm')
     is_option = fields.Boolean('Có thêm lựa chọn sản phẩm?', default=False)
     track_id = fields.Char(string='Track ID')
     state = fields.Selection([('none', 'New'),
@@ -55,7 +52,6 @@ class ProductsTiki(models.Model):
             raise ValidationError("Giá trị phải lớn hơn 0")
 
     def btn_create_product(self):
-
 
         conn = http.client.HTTPSConnection("api.tiki.vn")
         data_conn = self.env['base.integrate.tiki'].sudo().search([])
@@ -96,15 +92,11 @@ class ProductsTiki(models.Model):
             }
         }
         # Check product attributes
-        if self.is_option == False:
-            data["option_attributes"] = []
-        else:
-            for attribute in self.attribute_line_ids.attribute_id.mapped("name"):
-                data["option_attributes"].append(attribute)
+
 
         # add warehouses stock
         warehouse_stocks = []
-        warehouse_id = self.warehouse_ids.warehouse_ids.mapped('warehouses_id')
+        warehouse_id = self.warehouse_ids.warehouse_id.mapped('warehouses_id')
         qtyAvailable = self.warehouse_ids.mapped('qtyAvailable')
         for warehouse_id, qtyAvailable in zip(warehouse_id, qtyAvailable):
             warehouse_stocks.append({
@@ -112,29 +104,45 @@ class ProductsTiki(models.Model):
                 "qtyAvailable": qtyAvailable
             })
 
-        # check option attributes add variants
-        if len(data['option_attributes']) == 0:
+        if self.is_option == False:
+            data["option_attributes"] = []
             data['variants'].append({
-                "sku": self.sku,
-                "price": self.price,
+                "sku": self.default_code,
+                "price": self.lst_price,
                 "option1": "none",
                 "inventory_type": self.inventory_type,
                 "warehouse_stocks": warehouse_stocks,
                 "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg"
             })
         else:
-            for r in range(len(self.product_variant_ids)):
-                for value in self.prduct_variant_ids[r]:
-                    data['variants'].append({
-                        "sku": value.default_code,
-                        "option1": value,
-                        "price": value,
-                        "inventory_type": self.inventory_type,
-                        "warehouse_stocks": warehouse_stocks,
-                        "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
-                    })
-
-
+            for attribute in self.attribute_line_ids.attribute_id.mapped('name'):
+                data["option_attributes"].append(attribute)
+            if len(data['option_attributes']) == 1:
+                for r in range(len(self.product_variant_ids)):
+                    for value in self.product_variant_ids[r]:
+                            data['variants'].append({
+                                "sku": value.default_code,
+                                "option1": value.product_template_variant_value_ids.name,
+                                "price": value.lst_price,
+                                "inventory_type": self.inventory_type,
+                                "warehouse_stocks": warehouse_stocks,
+                                "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
+                            })
+            if len(data['option_attributes']) == 2:
+                for r in range(len(self.product_variant_ids)):
+                    for value in self.product_variant_ids[r]:
+                        data['variants'].append({
+                            "sku": value.default_code,
+                            "option1": value.product_template_variant_value_ids[0].name,
+                            "option2": value.product_template_variant_value_ids[1].name,
+                            "price": value.lst_price,
+                            "inventory_type": self.inventory_type,
+                            "warehouse_stocks": warehouse_stocks,
+                            "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
+                        })
+            else:
+                if not len(data["option_attributes"]):
+                    raise ValidationError("Bạn chưa chọn biến thể cho sản phẩm")
 
         # request api
         # payload = json.dumps(data)
@@ -142,12 +150,10 @@ class ProductsTiki(models.Model):
         # conn.request("POST", "/integration/v2.1/requests", payload, headers)
         #
         # res = conn.getresponse()
-        # response = res.read().decode("utf-8").replace("'", '"')
-        # res_json = json.loads(response)
-        # if res_json["track_id"]:
+        # if res.status == 200:
+        #     response = res.read().decode("utf-8").replace("'", '"')
+        #     res_json = json.loads(response)
         #     self.track_id = res_json["track_id"]
-        # else:
-        #     print(res_json['errors'])
 
     def btn_replay_product(self):
         conn = http.client.HTTPSConnection("api.tiki.vn")

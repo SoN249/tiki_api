@@ -29,6 +29,6 @@ class WerehousesTiki(models.Model):
 class  WerehousesTikiLine(models.Model):
     _name ="warehouses.tiki.line"
 
-    warehouse_ids = fields.Many2one('warehouses.tiki', string='Kho')
+    warehouse_id = fields.Many2one('warehouses.tiki', string='Kho')
     qtyAvailable = fields.Integer('Số lượng trong kho')
     product_id_warehouses = fields.Many2one('product.product',string='Product')

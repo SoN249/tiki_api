@@ -1,6 +1,6 @@
 import http.client
 from odoo import models, fields
-
+import json
 
 
 class TrackingTiki(models.Model):
@@ -15,5 +15,6 @@ class TrackingTiki(models.Model):
         }
         conn.request("GET", "/integration/v2/tracking/"+tracking, payload, headers)
         res = conn.getresponse()
-        data = res.read()
-        return data
+        data = res.read().decode("utf-8").replace("'", '"')
+        res_json = json.loads(data)
+        return res_json

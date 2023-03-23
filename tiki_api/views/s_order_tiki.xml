@@ -1,0 +1,49 @@
+
+<odoo>
+    <record model="ir.ui.view" id="s_order_tiki_view_form">
+        <field name="name">s.order.tiki.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//group[@name='sale_reporting']" position="before">
+                <group string="Kho">
+                    <field name="warehouse_ids" string="Kho Tiki"/>
+                    <field name="seller_warehouse" string="Kho người bán"/>
+                </group>
+                 <group string="Vận chuyển">
+                    <field name="fulfillment_type" string="Hình thức giao hàng"/>
+                    <field name="partner_name" string="Đối tác vận chuyển"/>
+                     <field name="shipping_status" string="Trạng thái giao hàng"/>
+                     <field name="description_shipping" string="Kế hoạch giao hàng"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="partner_shipping_id" string="Địa chỉ giao hàng"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">;
+                <field name="status" string="Tình trạng đơn hàng" readonly="1"/>
+            </xpath>
+            <xpath expr="//group[@name='sale_info']//field[@name='invoice_status']" position="before">
+                <field name="method" string="Phương thức thanh toán"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="before">
+                <field name="confirmation" string="Trạng thái sản phẩm"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!--        actions-->
+    <record model="ir.actions.act_window" id="sale_order_tiki_action">
+        <field name="name">Đơn hàng</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!--        menu-->
+    <menuitem id="menu_product_tiki" name="Tiki Shop"/>
+    <menuitem name="Đơn hàng" id="sale_order_tiki_id" parent="menu_product_tiki"/>
+    <menuitem name="Đơn hàng" id="sale_order_tiki" parent="sale_order_tiki_id" action="sale_order_tiki_action"/>
+</odoo>
