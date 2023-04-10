@@ -16,10 +16,9 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_open_label_layout']" position="after">
-                    <button type="object" name="btn_create_product" string="Tạo sản phẩm" attrs="{'invisible': [('track_id', '!=',False)]}"/>
-                    <button type="object" name="btn_replay_product" string="Replay" attrs="{'invisible': [('track_id','=',False)]}"/>
-                </xpath>
+<!--                <xpath expr="//button[@name='action_open_label_layout']" position="after">-->
+<!--                    <button type="object" name="btn_create_product" string="Tạo sản phẩm" attrs="{'invisible': [('track_id', '!=',False)]}"/>-->
+<!--                </xpath>-->
                 <xpath expr="//group[@name='group_general']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -27,9 +26,6 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <xpath expr="//page[@name='variants']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('is_option', '=', False)]}</attribute>
-                </xpath>
                 <xpath expr="//field[@name='product_tag_ids']" position="after">
                          <field name="product_weight_kg"/>
                          <field name="product_length"/>
@@ -54,12 +50,6 @@
 
                      </group>
                  </xpath>
-                <xpath expr="//div[@name='options']//span[@class='d-inline-block']" position="after">
-                    <span class="d-inline-block">
-                            <field name="is_option"/>
-                            <label for="is_option"/>
-                        </span>
-                </xpath>
 
                 <xpath expr="//notebook//page[@name='general_information']" position="after">
                     <page name="description" string="Mô tả sản phẩm">

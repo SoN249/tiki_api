@@ -10,4 +10,4 @@ from . import tracking_tiki
 from . import s_order_tiki
 from . import warehouses_seller
 from . import s_sale_order_line
-from . import integration_order_tiki
+from . import confirm_order_api

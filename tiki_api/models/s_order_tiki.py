@@ -2,7 +2,6 @@ from odoo import fields, api, models
 import http.client
 import json
 
-
 class OrderTiki(models.Model):
     _inherit = "sale.order"
 
@@ -60,6 +59,7 @@ class OrderTiki(models.Model):
         #     })
         #     self.env["integration.order.tiki"]._confirm_order_dropping(self.id_order, payload)
         return super(OrderTiki, self).action_cancel()
+
     def _get_list_order(self):
         conn = http.client.HTTPSConnection("api.tiki.vn")
         payload = ''
@@ -90,18 +90,3 @@ class OrderTiki(models.Model):
             self.commitment_date = res_json['shipping']['plan']['promised_delivery_date']
 
 
-class TikiIntegrationOrder(models.Model):
-    _name = "tiki.integration.order"
-
-    def _confirm_enough_stock_drop_shipping(self, payload, id):
-        conn = http.client.HTTPSConnection("api.tiki.vn")
-
-        data_conn = self.env['base.integrate.tiki'].sudo().search([])
-        headers = {
-            'tiki-api': data_conn.tiki_api,
-            'Authorization': 'Bearer ' + data_conn.access_token,
-            'Content-Type': 'application/json'
-        }
-        conn.request("POST", "/integration/v2/orders/" + id + "/confirm-available", payload, headers)
-        res = conn.getresponse()
-        data = res.read()

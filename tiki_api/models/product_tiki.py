@@ -28,7 +28,6 @@ class ProductsTiki(models.Model):
     is_auto_turn_on = fields.Boolean('Auto turn', default=False)
     ulr_image = fields.Text('Đường dẫn ảnh tài liệu')
     type_certificate = fields.Selection([('brand', 'Brand')], string="Type")
-    is_option = fields.Boolean('Có thêm lựa chọn sản phẩm?', default=False)
     track_id = fields.Char(string='Track ID')
     state = fields.Selection([('none', 'New'),
                               ('processing', "Processing"),
@@ -39,7 +38,7 @@ class ProductsTiki(models.Model):
                               ('approved', 'Approved'),
                               ('rejected', 'Rejected'),
                               ('deleted', 'Deleted')
-                              ], compute="_compute_state", default='none')
+                              ], default='none')
 
     @api.onchange('attribute_line_ids')
     def _check_attribute_id(self):
@@ -52,7 +51,6 @@ class ProductsTiki(models.Model):
             raise ValidationError("Giá trị phải lớn hơn 0")
 
     def btn_create_product(self):
-
         conn = http.client.HTTPSConnection("api.tiki.vn")
         data_conn = self.env['base.integrate.tiki'].sudo().search([])
         headers = {
@@ -91,9 +89,6 @@ class ProductsTiki(models.Model):
                 "is_auto_turn_on": self.is_auto_turn_on
             }
         }
-        # Check product attributes
-
-
         # add warehouses stock
         warehouse_stocks = []
         warehouse_id = self.warehouse_ids.warehouse_id.mapped('warehouses_id')
@@ -104,71 +99,84 @@ class ProductsTiki(models.Model):
                 "qtyAvailable": qtyAvailable
             })
 
-        if self.is_option == False:
+        if self.attribute_line_ids:
+            data["option_attributes"].extend(self.attribute_line_ids.attribute_id.mapped('name'))
+
+        if len(data["option_attributes"]) == 0:
             data["option_attributes"] = []
             data['variants'].append({
                 "sku": self.default_code,
-                "price": self.lst_price,
+                "price": self.list_price,
                 "option1": "none",
                 "inventory_type": self.inventory_type,
                 "warehouse_stocks": warehouse_stocks,
                 "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg"
             })
         else:
-            for attribute in self.attribute_line_ids.attribute_id.mapped('name'):
-                data["option_attributes"].append(attribute)
-            if len(data['option_attributes']) == 1:
-                for r in range(len(self.product_variant_ids)):
-                    for value in self.product_variant_ids[r]:
+                if self.product_variant_count > 1:
+                    for r in range(len(self.product_variant_ids)):
+                        for value in self.product_variant_ids[r]:
                             data['variants'].append({
                                 "sku": value.default_code,
-                                "option1": value.product_template_variant_value_ids.name,
                                 "price": value.lst_price,
                                 "inventory_type": self.inventory_type,
                                 "warehouse_stocks": warehouse_stocks,
                                 "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
                             })
-            if len(data['option_attributes']) == 2:
-                for r in range(len(self.product_variant_ids)):
-                    for value in self.product_variant_ids[r]:
-                        data['variants'].append({
-                            "sku": value.default_code,
-                            "option1": value.product_template_variant_value_ids[0].name,
-                            "option2": value.product_template_variant_value_ids[1].name,
-                            "price": value.lst_price,
-                            "inventory_type": self.inventory_type,
-                            "warehouse_stocks": warehouse_stocks,
-                            "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg",
+                            if len(data['option_attributes']) == 1:
+                                data['variants'][r].update({
+                                    "option1": value.product_template_variant_value_ids.name,
+                                })
+
+                            elif self.attribute_line_ids[0].value_count == 1:
+                                data['variants'][r].update({
+                                    "option1": self.attribute_line_ids[0].value_ids.name,
+                                    "option2": value.product_template_variant_value_ids.name
+                                })
+                            elif self.attribute_line_ids[1].value_count == 1:
+                                data['variants'][r].update({
+                                    "option1": value.product_template_variant_value_ids.name,
+                                    "option2": self.attribute_line_ids[1].value_ids.name
+                                })
+                            else:
+                                data['variants'][r].update({
+                                    "option1": value.product_template_variant_value_ids[0].name,
+                                    "option2": value.product_template_variant_value_ids[1].name
+                                })
+
+                else:
+                    data['variants'].append({
+                        "sku": self.default_code,
+                        "price": self.list_price,
+                        "inventory_type": self.inventory_type,
+                        "warehouse_stocks": warehouse_stocks,
+                        "image": "https://images-na.ssl-images-amazon.com/images/I/715uwlmCWsLBY.jpg"
+                    })
+                    if len(data['option_attributes']) == 1:
+                        data['variants'][0].update({
+                            "option1": self.attribute_line_ids[0].value_ids.name
                         })
-            else:
-                if not len(data["option_attributes"]):
-                    raise ValidationError("Bạn chưa chọn biến thể cho sản phẩm")
+                    else:
+                        data['variants'][0].update({
+                            "option1": self.attribute_line_ids[0].value_ids.name,
+                            "option2": self.attribute_line_ids[1].value_ids.name,
+                        })
 
-        # request api
-        # payload = json.dumps(data)
-        #
-        # conn.request("POST", "/integration/v2.1/requests", payload, headers)
-        #
-        # res = conn.getresponse()
-        # if res.status == 200:
-        #     response = res.read().decode("utf-8").replace("'", '"')
-        #     res_json = json.loads(response)
-        #     self.track_id = res_json["track_id"]
 
-    def btn_replay_product(self):
-        conn = http.client.HTTPSConnection("api.tiki.vn")
-        payload = ''
-        data_conn = self.env['base.integrate.tiki'].sudo().search([])
-        headers = {
-            'tiki-api': data_conn.tiki_api
-        }
-        conn.request("POST", "/integration/v2/tracking/" + self.track_id + "replay", payload, headers)
-        # res = conn.getresponse()
-        # data = res.read()
+        payload = json.dumps(data)
 
-    def _compute_state(self):
+        conn.request("POST", "/integration/v2.1/requests", payload, headers)
+        res = conn.getresponse()
+        if res.status == 200:
+            response = res.read().decode("utf-8").replace("'", '"')
+            res_json = json.loads(response)
+            self.track_id = res_json["track_id"]
+
+    def _cron_update_state(self):
         if not self.state:
             self.state = 'none'
         if self.track_id:
           data =  self.env['tracking.tiki']._get_tracking_tiki(self.track_id)
           self.state = data['state']
+          self.message_post(body=f'The new plan has been sent.')
+

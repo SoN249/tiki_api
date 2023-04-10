@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tiki_api",
+    'name': "tiktok_api",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -20,15 +20,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','sale','product'],
+    'depends': ['base','sale','stock'],
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
-        'views/res_config_setting.xml',
-        'views/product_tiki.xml',
-        'views/s_order_tiki.xml',
-        'data/scheduled_action_state.xml',
+        "views/s_order_tiktok.xml",
+        "views/s_res_config_settings.xml",
+        "views/s_stock_picking.xml",
+        "views/s_stock_warehouse.xml"
     ],
-
 }
