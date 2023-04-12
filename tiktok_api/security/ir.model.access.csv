@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tiktok_api_tiktok_api,tiktok_api.tiktok_api,model_tiktok_api_tiktok_api,base.group_user,1,1,1,1
+
+access_shipping_document,access_shipping_document,model_shipping_document,,1,1,1,1
+access_cursor_tiktok,access_cursor_tiktok,model_cursor_tiktok,,1,1,1,1

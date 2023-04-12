@@ -24,9 +24,13 @@
 
     # always loaded
     'data': [
+        "security/ir.model.access.csv",
         "views/s_order_tiktok.xml",
         "views/s_res_config_settings.xml",
         "views/s_stock_picking.xml",
-        "views/s_stock_warehouse.xml"
+        "views/s_stock_warehouse.xml",
+        "data/scheduled_sync_order.xml",
+        "data/scheduled_sync_package.xml",
+        "wizard/type_shipping_document.xml"
     ],
 }

@@ -10,6 +10,10 @@
             </xpath>
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="package_status"/>
+                <field name="package_tiktok_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='action_open_label_type']" position="after">
+                <button type="object" name="btn_shipping_document" string="Shiping Document" attrs="{'invisible': [('package_tiktok_id', '=', 'null')]}"/>
             </xpath>
         </field>
     </record>

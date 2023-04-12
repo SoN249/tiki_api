@@ -4,3 +4,4 @@ from . import s_res_config_settings
 from . import integrate_tiktok_api
 from . import s_stock_picking
 from . import s_stock_warehouse
+# from . import s_res_partner

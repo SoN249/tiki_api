@@ -11,6 +11,7 @@ class SStockTiktok(models.Model):
         param = {"shop_id": ""}
         response = self.env["integrate.tiktok"]._get_data_tiktok(api, param=param)
         data = json.loads(response)
+
         return data['data']
 
     def sync_warehouse(self):

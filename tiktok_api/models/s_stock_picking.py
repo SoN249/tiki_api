@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import fields, models,_
 import json
 import urllib3
 
@@ -23,9 +23,8 @@ class SStockPickings(models.Model):
     def get_packages(self):
         api = "/api/fulfillment/search"
         payload = {
-            "page_size": 50
+            "page_size": 20
         }
-
         response = self.env["integrate.tiktok"]._post_data_tiktok(api, json.dumps(payload))
         data = json.loads(response)
 
@@ -39,13 +38,17 @@ class SStockPickings(models.Model):
         return data['data']
 
     def sync_package(self):
+        ##
+
+        ###
         package_id = self.get_packages()
         for id in package_id['package_list']:
             package = self.get_package_detail(id['package_id'])
             sale_order = self.env['sale.order'].search([('tiktok_order_id','=',package['order_info_list'][0]['order_id'])])
+            if sale_order.state == "draft":
+                sale_order.action_confirm()
             if sale_order:
                 package_id = self.sudo().search([('sale_id','=', sale_order.id),("state",'!=','cancel')])
-
                 value = {
                     "package_status": str(package['package_status']),
                     "package_tiktok_id": package['package_id'],
@@ -53,5 +56,20 @@ class SStockPickings(models.Model):
                 }
                 if package['package_id'] not in self.search([]).mapped('package_tiktok_id'):
                     package_id.sudo().write(value)
+
+    def btn_shipping_document(self):
+            view = self.env.ref('tiktok_api.shipping_document_type_form_view')
+            order_id = self.env["sale.order"].sudo().search([('id', '=', self.sale_id.id)]).tiktok_order_id
+            return {
+                'name': _('Choose Type of Shipping document'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'shipping.document',
+                'views': [(view.id, 'form')],
+                'target': 'new',
+                'context': {'order_id': order_id},
+            }
+
+
+
 
 
